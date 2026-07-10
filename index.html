@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
+  @property --a { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
   :root {
     --canvas: #07111f;
     --chrome: #091525;
@@ -70,8 +71,15 @@
   @media (max-width: 720px) { .nav-links { display: none; } }
 
   .btn { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14.5px; padding: 12px 22px; border-radius: 11px; text-decoration: none; border: 1px solid transparent; transition: transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease; white-space: nowrap; }
-  .btn-primary { background: linear-gradient(135deg, var(--blue-strong), #1d4ed8); color: #fff; box-shadow: 0 14px 34px -12px rgba(37,99,235,.6); }
+  .btn-primary { position: relative; background: linear-gradient(135deg, var(--blue-strong), #1d4ed8); color: #fff; box-shadow: 0 14px 34px -12px rgba(37,99,235,.6); overflow: hidden; }
   .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 18px 40px -10px rgba(37,99,235,.7); }
+  .btn-primary::after {
+    content: ""; position: absolute; inset: 0; translate: -130% 0;
+    background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%);
+    animation: shimmer 3.2s ease-in-out infinite;
+  }
+  @keyframes shimmer { 0%, 30% { translate: -130% 0; } 70%, 100% { translate: 130% 0; } }
+  @media (prefers-reduced-motion: reduce) { .btn-primary::after { display: none; } }
   .btn-ghost { border-color: var(--line-strong); color: var(--ink); background: rgba(255,255,255,.02); }
   .btn-ghost:hover { background: rgba(255,255,255,.06); border-color: rgba(148,197,253,.45); }
   .btn-sm { padding: 9px 16px; font-size: 13px; }
@@ -88,8 +96,11 @@
   .hero h1 { font-size: clamp(34px, 5.6vw, 60px); font-weight: 800; letter-spacing: -0.025em; line-height: 1.05; margin: 0 0 22px; text-wrap: balance; }
   .hero h1 .grad { background: linear-gradient(135deg, #93c5fd, #38bdf8 55%, #34d399); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .hero .lead { font-size: 18.5px; color: var(--ink-secondary); max-width: 620px; margin: 0 auto 34px; }
-  .hero .cta-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 14px; }
+  .hero .cta-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 18px; }
   .hero .note { color: var(--ink-muted); font-size: 13px; }
+  .trust-row { display: flex; gap: 22px; justify-content: center; flex-wrap: wrap; margin-top: 22px; }
+  .trust-row span { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; color: var(--ink-secondary); }
+  .trust-row svg { color: var(--emerald); flex-shrink: 0; }
 
   /* product mockup */
   .mockup-stage { position: relative; margin-top: 56px; }
@@ -199,12 +210,30 @@
   .col.after li::before { content: "✓"; color: var(--emerald); font-weight: 800; }
 
   /* pricing */
+  .pricing-frame { max-width: 480px; margin: 0 auto; position: relative; }
+  .pricing-ribbon {
+    position: absolute; top: -16px; left: 50%; translate: -50% 0; z-index: 2;
+    display: inline-flex; align-items: center; gap: 6px;
+    background: linear-gradient(135deg, var(--emerald), #22c55e); color: #063d24;
+    font-size: 12px; font-weight: 800; letter-spacing: .02em;
+    padding: 7px 16px; border-radius: 999px;
+    box-shadow: 0 10px 26px -8px rgba(52,211,153,.55);
+    white-space: nowrap;
+  }
   .pricing-card {
     max-width: 480px; margin: 0 auto; text-align: center; position: relative;
     background: linear-gradient(180deg, var(--surface), var(--chrome));
-    border: 1px solid var(--line-strong); border-radius: 22px; padding: 40px 36px;
-    box-shadow: 0 50px 100px -40px rgba(0,0,0,.65);
+    border: 1px solid var(--line-strong); border-radius: 22px; padding: 44px 36px 40px;
+    box-shadow: 0 50px 100px -40px rgba(0,0,0,.65), 0 0 0 1px rgba(59,130,246,.08);
   }
+  .pricing-card::before {
+    content: ""; position: absolute; inset: -1px; border-radius: 22px; z-index: -1;
+    background: conic-gradient(from var(--a, 0deg), rgba(59,130,246,.55), rgba(52,211,153,.5), rgba(59,130,246,.55));
+    opacity: .55; filter: blur(14px);
+    animation: spin-glow 6s linear infinite;
+  }
+  @keyframes spin-glow { to { --a: 360deg; } }
+  @media (prefers-reduced-motion: reduce) { .pricing-card::before { animation: none; } }
   .pricing-card .tag { display: inline-block; font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #cfe0ff; background: rgba(59,130,246,.14); border: 1px solid var(--line-strong); border-radius: 999px; padding: 6px 14px; margin-bottom: 22px; }
   .pricing-card .price { font-size: 56px; font-weight: 900; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
   .pricing-card .price small { font-size: 16px; font-weight: 600; color: var(--ink-secondary); }
@@ -227,9 +256,31 @@
   .final-cta h2 { font-size: clamp(24px, 3.4vw, 34px); font-weight: 800; margin: 0 0 14px; }
   .final-cta p { color: var(--ink-secondary); max-width: 480px; margin: 0 auto 30px; }
 
+  /* floating whatsapp */
+  .wa-float {
+    position: fixed; right: 22px; bottom: 22px; z-index: 50;
+    width: 60px; height: 60px; border-radius: 50%;
+    background: #25d366; color: #fff;
+    display: grid; place-items: center;
+    box-shadow: 0 14px 32px -8px rgba(37,211,102,.6);
+    animation: wa-in .5s cubic-bezier(.2,1.2,.4,1) .4s both, wa-bob 3.4s ease-in-out 1.2s infinite;
+  }
+  .wa-float:hover { box-shadow: 0 18px 38px -6px rgba(37,211,102,.75); }
+  .wa-float::before {
+    content: ""; position: absolute; inset: -6px; border-radius: 50%;
+    border: 2px solid rgba(37,211,102,.55);
+    animation: wa-ring 2.6s ease-out infinite;
+  }
+  @keyframes wa-in { 0% { opacity: 0; scale: .4; } 100% { opacity: 1; scale: 1; } }
+  @keyframes wa-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+  @keyframes wa-ring { 0% { opacity: .7; scale: 1; } 100% { opacity: 0; scale: 1.35; } }
+  @media (prefers-reduced-motion: reduce) { .wa-float { animation: none; } .wa-float::before { animation: none; } }
+  @media (max-width: 520px) { .wa-float { right: 16px; bottom: 16px; width: 54px; height: 54px; } }
+
   footer { border-top: 1px solid var(--line); padding: 44px 0; }
   .foot-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
   .foot-inner .phone { font-weight: 700; }
+  .dev-credit { text-align: center; color: var(--ink-muted); font-size: 12px; margin: 22px 0 0; padding-top: 18px; border-top: 1px solid var(--line); }
   footer .muted { color: var(--ink-muted); font-size: 13px; }
 </style>
 </head>
@@ -263,6 +314,11 @@
         <a class="btn btn-ghost" href="#precos">Ver plano — R$69/mês</a>
       </div>
       <p class="note">Sem fidelidade · Suporte direto por WhatsApp</p>
+      <div class="trust-row">
+        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Sem cartão agora</span>
+        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Vagas limitadas de pré-lançamento</span>
+        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Resposta rápida no WhatsApp</span>
+      </div>
 
       <div class="mockup-stage reveal">
         <div class="mockup">
@@ -405,7 +461,9 @@
       <p class="kicker">Investimento</p>
       <h2 class="h2">Um plano só, sem letra miúda</h2>
       <p class="sub">Tudo incluso. Sem módulo trancado, sem cobrança por usuário.</p>
-      <div class="pricing-card reveal">
+      <div class="pricing-frame reveal">
+        <span class="pricing-ribbon">🔥 Preço de pré-lançamento</span>
+        <div class="pricing-card">
         <span class="tag">Plano único</span>
         <div class="price">R$ 69<small>/mês</small></div>
         <p class="per">Cancele quando quiser, sem multa</p>
@@ -418,6 +476,7 @@
           <li>Suporte direto por WhatsApp</li>
         </ul>
         <a class="btn btn-primary btn-block" href="https://wa.me/5563992611383?text=Ol%C3%A1!%20Quero%20garantir%20meu%20acesso%20antecipado%20ao%20RepairOS." target="_blank" rel="noopener">Quero garantir meu acesso</a>
+        </div>
       </div>
     </section>
 
@@ -463,7 +522,14 @@
       <a class="phone" href="https://wa.me/5563992611383" target="_blank" rel="noopener">(63) 99261-1383</a>
       <span class="muted">© 2026 RepairOS — Sistema de gestão para assistências técnicas.</span>
     </div>
+    <div class="wrap">
+      <p class="dev-credit">Desenvolvido por Klevy Costa</p>
+    </div>
   </footer>
+
+  <a class="wa-float" href="https://wa.me/5563992611383?text=Ol%C3%A1!%20Vi%20a%20p%C3%A1gina%20do%20RepairOS%20e%20quero%20saber%20mais." target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
+    <svg width="30" height="30" viewBox="0 0 32 32" fill="currentColor"><path d="M16.02 2.667c-7.36 0-13.33 5.97-13.33 13.33 0 2.35.62 4.55 1.7 6.46L2.7 29.33l7.06-1.85a13.24 13.24 0 006.26 1.58h.01c7.36 0 13.33-5.97 13.33-13.33s-5.97-13.33-13.33-13.33zm0 24.2h-.01a11.06 11.06 0 01-5.62-1.54l-.4-.24-4.19 1.1 1.12-4.08-.26-.42a10.9 10.9 0 01-1.7-5.9c0-6.03 4.9-10.94 10.96-10.94 2.93 0 5.68 1.14 7.75 3.21a10.87 10.87 0 013.21 7.74c0 6.03-4.91 10.95-10.96 10.95zm6-8.2c-.33-.17-1.94-.96-2.24-1.06-.3-.11-.52-.17-.74.17-.22.33-.85 1.06-1.04 1.28-.19.22-.38.24-.71.08-.33-.17-1.38-.51-2.63-1.63-.97-.87-1.63-1.94-1.82-2.27-.19-.33-.02-.5.14-.67.15-.15.33-.38.5-.57.16-.19.22-.33.33-.55.11-.22.05-.41-.03-.58-.08-.17-.74-1.79-1.02-2.45-.27-.64-.54-.56-.74-.57h-.63c-.22 0-.58.08-.88.41-.3.33-1.15 1.13-1.15 2.75s1.18 3.19 1.34 3.41c.17.22 2.32 3.55 5.63 4.98.79.34 1.4.54 1.88.69.79.25 1.5.22 2.07.13.63-.09 1.94-.79 2.21-1.56.27-.76.27-1.42.19-1.56-.08-.14-.3-.22-.63-.38z"/></svg>
+  </a>
 
   <script>
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
